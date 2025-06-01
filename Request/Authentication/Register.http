@@ -1,0 +1,10 @@
+POST http://localhost:5184/Authentication/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "vaishnav@eloit.com",
+  "password": "password123",
+  "confirmPassword": "password123"
+}

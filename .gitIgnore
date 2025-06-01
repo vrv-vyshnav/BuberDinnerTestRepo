@@ -1,0 +1,42 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+.history/
+
+# Visual Studio
+.vs/
+
+# Rider
+.idea/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Logs
+*.log
+
+# dotenv environment variables
+.env
+
+# Database
+*.db
+*.sqlite
+
+# Secrets
+secrets.json
+
+# Mac system files
+.DS_Store
+
+# Windows thumbnail cache
+Thumbs.db
