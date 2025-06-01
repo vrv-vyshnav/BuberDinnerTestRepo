@@ -2,6 +2,7 @@ POST http://localhost:5184/Authentication/login
 Content-Type: application/json
 
 {
-  "email": "John",
-  "password": "vaishnav@eloit.com"
+
+  "email": "vaishnav@eloit.com",
+  "password": "password123"
 }

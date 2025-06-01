@@ -26,9 +26,9 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthenticationResult>> login(string email, string password)
+    public async Task<ActionResult<AuthenticationResult>> login(AuthenticationRequest request)
     {
-        var result = await _authenticationService.LoginAsync(email, password);
+        var result = await _authenticationService.LoginAsync(request.Email, request.Password);
         return Ok(result);
     }
 

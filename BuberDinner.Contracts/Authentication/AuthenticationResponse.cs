@@ -6,3 +6,7 @@ public record AuthenticationResponse(
     string LastName,
     string Email,
     string Token);
+
+public record AuthenticationRequest(
+    string Email,
+    string Password);
