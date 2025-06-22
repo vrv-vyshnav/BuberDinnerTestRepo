@@ -1,10 +1,12 @@
 using BuberDinner.Application.Authentication.Command.Register;
 using BuberDinner.Application.Services.Authentication;
 using BuberDinner.Application.Services.Authentication.Query;
-using MediatR;
+using BuberDinner.Contracts.Authentication;
+using MapsterMapper;
+using MediatR; 
 using Microsoft.AspNetCore.Mvc;
 
-namespace BuberDinner.Contracts.Authentication;
+namespace BuberDinner.Api.Authentication;
 
 [ApiController]
 [Route("[controller]")]
@@ -12,22 +14,19 @@ public class AuthenticationController : ControllerBase
 {
 
     private readonly ISender _mediator;
+    private readonly IMapper _mapper;
 
-    public AuthenticationController(IMediator mediator)
+    public AuthenticationController(IMediator mediator, IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthenticationResult>> Register(RegisterRequest request)
     {
-
-        var result = await _mediator.Send(new RegisterCommand(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Password,
-            request.ConfirmPassword));
+        var model = _mapper.Map<RegisterCommand>(request);
+        var result = await _mediator.Send(model);
 
         return Ok(result);
     }
@@ -36,9 +35,8 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthenticationResult>> login(AuthenticationRequest request)
     {
-        var result = await _mediator.Send(new LoginQuery(
-            request.Email,
-            request.Password));
+        var model = _mapper.Map<LoginQuery>(request);
+        var result = await _mediator.Send(model);
         return Ok(result);
     }
 
