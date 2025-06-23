@@ -1,10 +1,11 @@
 using BuberDinner.Application.common.Interface.Authenticator;
 using BuberDinner.Application.common.Interface.Persistence;
 using BuberDinner.Application.Services.Authentication;
+using BuberDinner.Domain.Common;
 using MediatR;
 
 namespace BuberDinner.Application.Authentication.Command.Register;
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthenticationResult>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<AuthenticationResult>>
 {
 
     private readonly IUserRepository _userRepository;
@@ -20,33 +21,30 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Authentic
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public  Task<AuthenticationResult> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public  Task<Result<AuthenticationResult>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var (firstName, lastName, email, password, confirmPassword) = request;
+        var(fullName, email, password, Cpassword) = request;
 
-        if (_userRepository.GetUserByEmail(email) is not null)
-            {
-                throw new Exception("User already exists with this email.");
-            }
 
-            var user = new Domain.Entity.User
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                Password = password 
-            };
-            _userRepository.AddUser(user);
+        var user = new Domain.Entity.User
+        {
+            FirstName = fullName,
+            LastName = fullName,
+            Email = email,
+            Password = password 
+        };
+        _userRepository.AddUser(user);
 
-            var token = _jwtTokenGenerator.GenerateToken(user.Id,user.Email,user.FirstName, user.LastName);
+        var token = _jwtTokenGenerator.GenerateToken(user.Id,user.Email,user.FirstName, user.LastName);
 
-            var response = new AuthenticationResult(
-                user.Id,
-                user.FirstName,
-                user.LastName,
-                user.Email,
-                token);
+        var response = new AuthenticationResult(
+            user.Id,
+            user.FirstName,
+            user.LastName,
+            user.Email,
+            token);
 
-            return Task.FromResult(response);
+         return Task.FromResult(Result<AuthenticationResult>.Success(response));
+
     }
 }

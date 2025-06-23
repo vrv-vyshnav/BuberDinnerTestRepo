@@ -1,10 +1,11 @@
 using BuberDinner.Application.common.Interface.Authenticator;
 using BuberDinner.Application.common.Interface.Persistence;
+using BuberDinner.Domain.Common;
 using MediatR;
 
 namespace BuberDinner.Application.Services.Authentication.Query;
 
-public class LoginQueryHandler : IRequestHandler<LoginQuery, AuthenticationResult>
+public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<AuthenticationResult>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
@@ -13,17 +14,16 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, AuthenticationResul
         _userRepository = userRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
     }
-    public Task<AuthenticationResult> Handle(LoginQuery request, CancellationToken cancellationToken)
+    public Task<Result<AuthenticationResult>> Handle(LoginQuery request, CancellationToken cancellationToken)
     {
         var (email, password) = request;
-        if (_userRepository.GetUserByEmail(email) is not { } user)
-        {
-            throw new Exception("User does not exist with this email.");
-        }
-        if (user.Password != password)
-        {
-            throw new Exception("Invalid password.");
-        }
+        var user =  _userRepository.GetUserByEmail(email);
+
+        if (user is null)
+            return Task.FromResult(Result<AuthenticationResult>.Failure("Invalid Credentials"));
+
+        if (user.Password == password)
+            return Task.FromResult(Result<AuthenticationResult>.Failure("Invalid Credentials"));
 
         var token = _jwtTokenGenerator.GenerateToken(user.Id,user.Email,user.FirstName, user.LastName);
 
@@ -34,6 +34,6 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, AuthenticationResul
             user.Email,
             token);
 
-        return Task.FromResult(response);
+        return Task.FromResult(Result<AuthenticationResult>.Success(response));
     }
 }

@@ -10,6 +10,7 @@ public class AuthenticationMappingConfig : IRegister
     public void Register(TypeAdapterConfig config)
     {
         config.NewConfig<AuthenticationResult, AuthenticationResponse>();
-        config.NewConfig<RegisterRequest, RegisterCommand>();
+        config.NewConfig<RegisterRequest, RegisterCommand>()
+            .Map(dest => dest.FullName, src => src.FirstName + " " + src.LastName);
     }
 }
