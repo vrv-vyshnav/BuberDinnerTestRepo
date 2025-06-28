@@ -4,7 +4,7 @@ using BuberDinner.infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    builder.Services.AddOpenApi();
+    // builder.Services.AddOpenApi();
     builder.Services
         .AddPresentation()
         .AddApplication()
