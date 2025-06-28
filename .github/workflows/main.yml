@@ -1,0 +1,37 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "production" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Set image tag
+      id: image
+      run: echo "IMAGE_TAG=vrvvaishnav/buberapp:production-$(date +%s)" >> "$GITHUB_ENV"
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t $IMAGE_TAG .
+        docker push $IMAGE_TAG
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          docker pull $IMAGE_TAG
+          docker stop buberapp || true
+          docker rm buberapp || true
+          docker run -d -p 5184:5184 --name buberapp $IMAGE_TAG
