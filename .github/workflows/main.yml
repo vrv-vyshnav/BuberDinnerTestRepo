@@ -2,7 +2,7 @@ name: Docker Image CI & Deploy
 
 on:
   push:
-    branches: [ "production" ]
+    branches: [ "master" ]
   workflow_dispatch:  # 👈 Enables manual trigger from the Actions tab
 
 jobs:
